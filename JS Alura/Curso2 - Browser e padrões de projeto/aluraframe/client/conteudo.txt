@@ -1,3 +1,0 @@
-MVC (Model-View-Controller), declarando classes que representam nossos modelos (dados) e 
-classes que representam nossas views (tela). As ações do usuário serão interceptadas por uma Controller, 
-que irá alterar os dados, o Model, enquanto a View será atualizada para exibir o estado mais atual. 
