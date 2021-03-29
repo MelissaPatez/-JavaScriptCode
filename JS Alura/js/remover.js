@@ -3,9 +3,13 @@ var tabela = document.querySelector("table");
 
 
 tabela.addEventListener("dblclick", function(event){
-    var alvoEvento = event.target;
+    event.target.parentNode.classList.add("fadeOut");
+    
+    setTimeout(function(){
+        var alvoEvento = event.target;
     var paiAlvo = alvoEvento.parentNode;
-    paiAlvo.remove()
+    paiAlvo.remove();
+    }, 500)
 });
 
 
