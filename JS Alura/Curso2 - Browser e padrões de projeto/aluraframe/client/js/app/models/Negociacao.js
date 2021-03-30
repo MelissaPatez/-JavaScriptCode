@@ -1,26 +1,49 @@
-class Negociacao{
-    constructor(data, quantidade, valor){
-        this._data = new Date(data.getTime());
-        this._quantidade = quantidade;
-        this._valor = valor;
-        Object.freeze(this);//qualquer alteração nas suas propriedades será ignorada
-     
-    };
-
-    //get propriedade de acesso a leitura 
-    get volume(){
-        return this._quantidade*this._valor;
-    };
-
-    get data() {
-        return new Date(this._data.getTime());
+class NegociacoesView {
+    
+    constructor(elemento) {
+        
+        this._elemento = elemento;
     }
     
-    get quantidade() {
-        return this._quantidade;
+    _template(model) {
+        
+        return `
+        <table class="table table-hover table-bordered">
+            <thead>
+                <tr>
+                    <th>DATA</th>
+                    <th>QUANTIDADE</th>
+                    <th>VALOR</th>
+                    <th>VOLUME</th>
+                </tr>
+            </thead>
+        
+            <tbody>
+                ${model.negociacoes.map(n => `
+                    
+                    <tr>
+                        <td>${DateHelper.dataParaTexto(n.data)}</td>
+                        <td>${n.quantidade}</td>
+                        <td>${n.valor}</td>
+                        <td>${n.volume}</td>
+                    </tr>
+                    
+                `).join('')}                
+            </tbody>
+                  
+            <tfoot>
+                <td colspan="3"></td>
+                <td>
+                    ${model.negociacoes.reduce((total, n) => total + n.volume, 0.0)}
+                </td>
+            </tfoot>
+            
+        </table>
+        `;
     }
     
-    get valor() {
-        return this._valor;
+    update(model) {
+        
+        this._elemento.innerHTML = this._template(model);
     }
-};
+}
