@@ -1,19 +1,24 @@
 import { handleStatus } from '../utils/promise-helpers.js';
 import { partialize, pipe } from '../utils/operators.js';
+import { Maybe } from '../utils/maybe.js';
 
 const API = `http://localhost:3000/notas`;
 
-const getItemsFromNotas = notas => notas.$flatMap(nota => nota.itens);
-const filterItemsByCode = (code, items) => items.filter(item => item.codigo === code);
-const sumItemsValue = items => items.reduce((total, item) => total + item.valor, 0);
+const getItemsFromNotas = notasM => notasM.map(notas => notas.$flatMap(nota => nota.itens));
+
+const filterItemsByCode = (code, itemsM) => itemsM.map(items => items.filter(item => item.codigo == code));
+
+const sumItemsValue = itemsM => itemsM.map(items => items.reduce((total, item) => total + item.valor, 0));
+
 
 export const notasService = {
     async listAll() {
+
         try {
             const res = await fetch(API);
-            return handleStatus(res);
+            const notas = await handleStatus(res);
+            return Maybe.of(notas);
         } catch (err) {
-            // a responsável pelo logo é do serviço
             console.log(err);
             return await Promise.reject('Não foi possível obter as notas fiscais');
         }
@@ -22,10 +27,13 @@ export const notasService = {
     sumItems(code) {
         const filterItems = partialize(filterItemsByCode, code);
         const sumItems = pipe(getItemsFromNotas, filterItems, sumItemsValue);
-        
-        return this.listAll()
-            .then(sumItems);
-    }
 
+
+        return this.listAll()
+        .then(sumItems)   
+        // obtendo o valor da mônada 
+        .then(result => result.getOrElse(0));
+    }
+    
 
 };
