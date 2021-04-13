@@ -18,3 +18,12 @@ export const timeoutPromise = (milliseconds, promise) => {
         promise
     ]);
 };
+
+export const retry = (retries, milliseconds, fn) =>
+    fn().catch(err => {
+        console.log(retries);
+        return delay(milliseconds)().then(() =>
+            retries > 1
+                ? retry(retries - 1, milliseconds, fn)
+                : Promise.reject(err))
+    }); 
