@@ -1,5 +1,5 @@
 import { handleStatus } from '../utils/promise-helpers.js';
-import { partialize, compose, pipe } from '../utils/operators.js';
+import { partialize, pipe } from '../utils/operators.js';
 
 const API = `http://localhost:3000/notas`;
 
@@ -19,9 +19,13 @@ export const notasService = {
         }
     },
 
-    async sumItems(code) {
+    sumItems(code) {
         const filterItems = partialize(filterItemsByCode, code);
-        const sumItems = pipe(sumItemsValue, filterItems, getItemsFromNotas);
-        return this.listAll().then(sumItems);
+        const sumItems = pipe(getItemsFromNotas, filterItems, sumItemsValue);
+        
+        return this.listAll()
+            .then(sumItems);
     }
+
+
 };
